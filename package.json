@@ -1,0 +1,19 @@
+{
+  "name": "fileloader",
+  "version": "1.0.0",
+  "description": "file loader by native JS",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel serve ./public/index.html --port 1998 --open",
+    "build": "parcel build ./index.html",
+    "help": "parcel help"
+  },
+  "author": "Vladilen Minin",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5"
+  },
+  "dependencies": {
+    "firebase": "^9.6.9"
+  }
+}
