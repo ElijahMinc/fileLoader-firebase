@@ -89,12 +89,9 @@ class FileLoader {
 
    #filterImgsFormats(selectFormats = []){
       let updateFiles = []
-      // let invalid = 0
 
       for (let indexFormat = 0; indexFormat < selectFormats.length; indexFormat++) {
          const format = selectFormats[indexFormat];
-         // const selectedSize = this.#handleSize(this.options.sizeMb)
-
 
          for (let indexFile = 0; indexFile < this.files.length; indexFile++) {
             const file = this.files[indexFile];
