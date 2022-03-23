@@ -20,6 +20,7 @@ const storage = getStorage();
 
 
 const file1 = new FileLoader('.file',{
+   typeFile: 'field',
    multiple: true,
    formats: ['jpg', 'jpeg', 'webp'],
    sizeMb: 2,
@@ -33,6 +34,9 @@ const file1 = new FileLoader('.file',{
           console.log('Upload is ' + progress + '% done');
           currentPreviewProgress.style.width = `${progress}%`
           currentPreviewProgress.textContent = progress.toFixed(0) + '%'
+          if(progress === 100){
+            currentPreviewProgress.style.backgroundSize = 'auto'
+          }
         },
         (error) => {
           console.log(`is error: ${error}`)

@@ -1,3 +1,6 @@
+
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 function bytesToSize(bytes) {
    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
    if (!bytes) return '0 Byte';
@@ -28,6 +31,8 @@ const createElement = (element, textContent, classes) => {
 
 const arrayOfDefaultClassesOpenFileBtn = ['btnFile','btnOpenFile']
 const arrayOfDefaultClassesLoadFileBtn = ['btnFile','btnLoadFile']
+const arrayOfDefaultClassesOpenFileField = ['fieldFile','fieldOpenFile']
+const arrayOfDefaultClassesLoadFileField = ['fieldFile','fieldLoadFile']
 const arrayOfDefaultClassesPreviewContainer = ['preview']
 
 
@@ -45,12 +50,10 @@ class FileLoader {
    constructor(selector, options){
       this.files = []
       this.invalid = false
-
-      this.$openFileBtn = createElement('div', 'Open', arrayOfDefaultClassesOpenFileBtn)
-      this.$loadFileBtn = createElement('button', 'Load', arrayOfDefaultClassesLoadFileBtn)
+      this.$openFileBtn = options?.typeFile === 'field' ? createElement('div', !!options?.multiple ? 'Select files' : 'Select file', arrayOfDefaultClassesOpenFileField) : createElement('div', 'Open', arrayOfDefaultClassesOpenFileBtn)
+      this.$loadFileBtn = options?.typeFile === 'field' ? createElement('button', 'Load', arrayOfDefaultClassesLoadFileField) : createElement('button', 'Load', arrayOfDefaultClassesLoadFileBtn)
       this.$previewContainer = createElement('div', '', arrayOfDefaultClassesPreviewContainer)
       this._rootSelector = document.querySelector(selector)
-
       this.options = !!Object.keys(options).length ? options : defaultOptions
 
       this.#render()
@@ -115,7 +118,7 @@ class FileLoader {
 
          if (file.size < currentSizeMb){
             updateFilesLessCurrentSize.push(file)
-         }else{
+         }else {
             filesNameMoreCurrentSize.push(file.name)
          }
       }
@@ -155,10 +158,7 @@ class FileLoader {
 
    #onChange (event){
       this.$previewContainer.innerHTML = ''
-
-      const previewContainer = document.querySelector('.preview')
-      const loadedFileBtn = document.querySelector('.btnLoadFile')
-
+      console.log(this.$previewContainer)
       const filesFileLoader = event.target.files
 
       
@@ -174,7 +174,7 @@ class FileLoader {
       }
 
       if (!!this.files.length){
-         loadedFileBtn.style.display = 'inline'
+         this.$loadFileBtn.style.display = 'inline'
       }
 
       this.files.forEach(file => {
@@ -186,18 +186,19 @@ class FileLoader {
 
          const {name, size} = file
 
-         reader.onload = function(env){
+         reader.onload = (env) => {
             const src = env.currentTarget.result
-
-            previewContainer.insertAdjacentHTML('beforeend', `
+         this.$previewContainer.insertAdjacentHTML('beforeend', `
             <div class="preview__item">
-               <div class="preview__remove" data-name='${name}'>X</div>
+               <div class="preview__remove">
+                  <i class="fa-solid fa-xmark icon-close" data-name='${name}'></i>
+               </div>
                   <img class="preview__img" src="${src}"/>
                   <div class="preview__data-info">
                      ${name}
                      ${bytesToSize(size)}
                   </div>
-               <div class="preview__progress"></div>
+               <div class="preview__progress loading"></div>
             </div>
             `)
          }
