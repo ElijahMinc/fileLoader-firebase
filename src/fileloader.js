@@ -41,9 +41,7 @@ const defaultOptions = {
    formats: ['jpg', 'jpeg', 'webp'],
    sizeMb: 1,
    onUpload(){},
-   handleError(error){
-
-   }
+   handleError(error){}
 }
 
 class FileLoader {
@@ -158,7 +156,7 @@ class FileLoader {
 
    #onChange (event){
       this.$previewContainer.innerHTML = ''
-      console.log(this.$previewContainer)
+
       const filesFileLoader = event.target.files
 
       
@@ -178,9 +176,7 @@ class FileLoader {
       }
 
       this.files.forEach(file => {
-         if(!file.type.match('image')){
-            return
-         }
+         if(!file.type.match('image')) return
 
          const reader = new FileReader()
 

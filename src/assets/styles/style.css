@@ -181,7 +181,6 @@ input[type="file"] {
     rgb(213, 213, 213, 50%) 70%
   );
   background-size: 400%;
-  /* background-size: auto; */
   animation: loading 1.2s ease-in-out infinite;
 }
 

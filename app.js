@@ -1,6 +1,6 @@
 import FileLoader from "./src/fileloader";
 import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytesResumable} from "firebase/storage";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 import './src/assets/styles/style.css'
 
@@ -14,13 +14,12 @@ const firebaseConfig = {
   appId: "1:740330206763:web:8e6cbf5269db288963dc6e"
 };
 
-const app = initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 
 const storage = getStorage();
 
-
 const file1 = new FileLoader('.file',{
-   typeFile: 'field',
+   typeFile: 'field', // or button
    multiple: true,
    formats: ['jpg', 'jpeg', 'webp'],
    sizeMb: 2,
@@ -39,11 +38,9 @@ const file1 = new FileLoader('.file',{
           }
         },
         (error) => {
-          console.log(`is error: ${error}`)
+          console.log(`Error: ${error}`)
         },
         () => {
-          console.log('загрузка завершена')
-  
           Object.entries(allBtns).forEach(([key, _]) => allBtns[key].classList.remove('disabled'))
         }
         )
