@@ -1,22 +1,93 @@
-import FileLoader from "./src/fileloader";
-import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import 'regenerator-runtime/runtime'
+import { ref, uploadBytesResumable, listAll, getDownloadURL, deleteObject  } from "firebase/storage";
 
+import {storage} from './storage/storage'
+import FileLoader from "./src/fileloader";
+import {Loader} from './src/components/Loader'
+import {Toast} from './src/components/Toast'
 import './src/assets/styles/style.css'
 
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAgBj6wfzAPDMKHsTcrg4MYDtyPLrhQ0TU",
-  authDomain: "fileloader-42e2f.firebaseapp.com",
-  projectId: "fileloader-42e2f",
-  storageBucket: "fileloader-42e2f.appspot.com",
-  messagingSenderId: "740330206763",
-  appId: "1:740330206763:web:8e6cbf5269db288963dc6e"
-};
+const loading = document.querySelector('#loading')
 
-initializeApp(firebaseConfig);
 
-const storage = getStorage();
+const asyncFetchFilesFromStorage = async () => {
+  
+  loading.innerHTML = Loader()
+  
+  const filesBlock = document.querySelector('.files-block')
+
+  filesBlock.innerHTML = ''
+
+  const listRef = ref(storage, 'image')
+
+  try {
+    const list = await listAll(listRef)
+
+     const promiseItemsRef =  list.items.map(async (itemRef) => {
+
+        const path = itemRef._location.path
+        const storageRef = ref(storage, path)
+
+        return await getDownloadURL(storageRef)
+
+      })
+
+      Promise.all(promiseItemsRef).then((result) => {
+        loading.innerHTML = ''
+
+        if(!result.length){
+          return Toast('Storage is empty', false)
+        } 
+         console.log(result)
+
+        result.forEach(src => (
+          filesBlock.insertAdjacentHTML('beforeend', `
+          <div class="files-block__item" data-src='${src}' >
+            <img src="${src}" alt="${src}">
+          </div>
+        `)
+        )) 
+        Toast('All images loaded', true)
+
+      })
+
+  } catch (error) {
+      console.log(error)
+  }
+}
+
+
+if(!!files){
+  files.addEventListener('click', asyncFetchFilesFromStorage)
+}
+
+
+
+const filesBlock = document.querySelector('.files-block');
+
+filesBlock.addEventListener('click',async (event) => {
+  if(!event.target.dataset) return
+  console.log(event)
+  const { src } = event.target.dataset
+  const desertRef = ref(storage, src);
+  await deleteObject(desertRef)
+
+  filesBlock.innerHTML = ''
+  loading.innerHTML = Loader()
+  
+  console.log('deleted succesfull')
+
+  Toast('Deleted succesfull', true)
+
+  await asyncFetchFilesFromStorage()
+
+  loading.innerHTML = ''
+
+
+})
+       
+
 
 const file1 = new FileLoader('.file',{
    typeFile: 'field', // or button
@@ -25,6 +96,7 @@ const file1 = new FileLoader('.file',{
    sizeMb: 2,
    onUpload(file, currentPreviewProgress, allBtns){
       const storageRef = ref(storage, `image/${file.name}`);
+      
       const uploadTask = uploadBytesResumable(storageRef, file);
       uploadTask.on('state_changed', 
         (snapshot) => {

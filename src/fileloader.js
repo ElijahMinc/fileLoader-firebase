@@ -63,7 +63,7 @@ class FileLoader {
    }
 
    #triggerInputElement () {
-      if(this.$openFileBtn.classList.contains('disabled')) return
+      if (this.$openFileBtn.classList.contains('disabled')) return
       this._rootSelector.click()
    }
 
@@ -143,6 +143,7 @@ class FileLoader {
       this.files.forEach((file, index) => {
 
          const currentPreviewProgress = previewProgress[index]
+
          this.$openFileBtn.classList.add('disabled')
          this.$loadFileBtn.classList.add('disabled')
 
@@ -167,38 +168,43 @@ class FileLoader {
          this.#filterImgsFormats(selectFormats)
       }
 
-      if (!!this.options?.sizeMb){
+      if (!!this.options?.sizeMb) {
          this.#filterImgsSizes(this.options?.sizeMb)
       }
 
-      if (!!this.files.length){
+      if (!!this.files.length) {
          this.$loadFileBtn.style.display = 'inline'
       }
 
-      this.files.forEach(file => {
+      this.files.forEach((file) => {
          if(!file.type.match('image')) return
 
          const reader = new FileReader()
 
-         const {name, size} = file
+         const { name, size } = file
 
-         reader.onload = (env) => {
-            const src = env.currentTarget.result
-         this.$previewContainer.insertAdjacentHTML('beforeend', `
-            <div class="preview__item">
-               <div class="preview__remove">
-                  <i class="fa-solid fa-xmark icon-close" data-name='${name}'></i>
-               </div>
-                  <img class="preview__img" src="${src}"/>
-                  <div class="preview__data-info">
-                     ${name}
-                     ${bytesToSize(size)}
+         reader.onload = (file) => {
+            
+            const src = file.currentTarget.result
+
+            this.$previewContainer.insertAdjacentHTML('beforeend', `
+               <div class="preview__item">
+                  <div class="preview__remove">
+                     <i class="fa-solid fa-xmark icon-close" data-name='${name}'></i>
                   </div>
-               <div class="preview__progress loading"></div>
-            </div>
+                     <img class="preview__img" data-src='${name}' src="${src}"/>
+                     <div class="preview__data-info">
+                        ${name}
+                        ${bytesToSize(size)}
+                     </div>
+                  <div class="preview__progress loading"></div>
+               </div>
             `)
+            
          }
+
          reader.readAsDataURL(file)
+       
       })
       
    }

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "parcel serve ./public/index.html --port 1998 --open",
-    "build": "parcel build ./index.html",
+    "build": "parcel build ./public/index.html",
     "help": "parcel help"
   },
   "author": "Ilya Protsenko",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.1.1",
-    "firebase": "^9.6.9"
+    "firebase": "^9.6.9",
+    "regenerator-runtime": "^0.13.9"
   }
 }
