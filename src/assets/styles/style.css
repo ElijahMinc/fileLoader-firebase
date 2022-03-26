@@ -303,7 +303,6 @@ input[type="file"] {
 }
 
 /* Toast */
-
 .toast {
   position: fixed;
   top: 10px;
@@ -316,12 +315,13 @@ input[type="file"] {
   background-color: white;
   color: white;
   border-radius: 5px;
+  z-index: 10000;
 }
 
-.toast.ok{
+.toast.ok {
   background-color: rgb(51, 186, 94);
 }
 
-.toast.error{
+.toast.error {
   background-color: rgb(214, 46, 46);
 }
