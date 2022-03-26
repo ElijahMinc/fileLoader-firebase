@@ -1,6 +1,5 @@
 import 'regenerator-runtime/runtime'
 import { ref, uploadBytesResumable, listAll, getDownloadURL, deleteObject  } from "firebase/storage";
-
 import {storage} from './storage/storage'
 import FileLoader from "./src/fileloader";
 import {Loader} from './src/components/Loader'
@@ -9,7 +8,7 @@ import './src/assets/styles/style.css'
 
 
 const loading = document.querySelector('#loading')
-
+const filesBlock = document.querySelector('.files-block');
 
 const asyncFetchFilesFromStorage = async () => {
   
@@ -22,7 +21,7 @@ const asyncFetchFilesFromStorage = async () => {
   const listRef = ref(storage, 'image')
 
   try {
-    const list = await listAll(listRef)
+     const list = await listAll(listRef)
 
      const promiseItemsRef =  list.items.map(async (itemRef) => {
 
@@ -31,15 +30,15 @@ const asyncFetchFilesFromStorage = async () => {
 
         return await getDownloadURL(storageRef)
 
-      })
+    })
 
       Promise.all(promiseItemsRef).then((result) => {
+
         loading.innerHTML = ''
 
-        if(!result.length){
+        if (!result.length){
           return Toast('Storage is empty', false)
-        } 
-         console.log(result)
+        }
 
         result.forEach(src => (
           filesBlock.insertAdjacentHTML('beforeend', `
@@ -47,7 +46,8 @@ const asyncFetchFilesFromStorage = async () => {
             <img src="${src}" alt="${src}">
           </div>
         `)
-        )) 
+        ))
+
         Toast('All images loaded', true)
 
       })
@@ -62,28 +62,21 @@ if(!!files){
   files.addEventListener('click', asyncFetchFilesFromStorage)
 }
 
-
-
-const filesBlock = document.querySelector('.files-block');
-
 filesBlock.addEventListener('click',async (event) => {
   if(!event.target.dataset) return
-  console.log(event)
+
   const { src } = event.target.dataset
   const desertRef = ref(storage, src);
   await deleteObject(desertRef)
 
   filesBlock.innerHTML = ''
   loading.innerHTML = Loader()
-  
-  console.log('deleted succesfull')
 
   Toast('Deleted succesfull', true)
 
   await asyncFetchFilesFromStorage()
 
   loading.innerHTML = ''
-
 
 })
        
@@ -92,17 +85,16 @@ filesBlock.addEventListener('click',async (event) => {
 const file1 = new FileLoader('.file',{
    typeFile: 'field', // or button
    multiple: true,
-   formats: ['jpg', 'jpeg', 'webp'],
+   formats: ['jpg', 'jpeg', 'webp', 'png'],
    sizeMb: 2,
    onUpload(file, currentPreviewProgress, allBtns){
       const storageRef = ref(storage, `image/${file.name}`);
-      
+
       const uploadTask = uploadBytesResumable(storageRef, file);
       uploadTask.on('state_changed', 
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           // previewProgress
-          console.log('Upload is ' + progress + '% done');
           currentPreviewProgress.style.width = `${progress}%`
           currentPreviewProgress.textContent = progress.toFixed(0) + '%'
           if(progress === 100){
@@ -119,5 +111,9 @@ const file1 = new FileLoader('.file',{
    },
    handleError(error){
      console.log(error)
+      !!error?.invalidSize?.length && error?.invalidSize?.forEach(invalidSize => {
+        Toast(`Invalid size file: ${invalidSize}. Valid size: ${this?.sizeMb}MB`, false)
+        console.log(this)
+      });
    }
 })

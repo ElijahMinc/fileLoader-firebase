@@ -11,5 +11,5 @@ export const Toast = (message, isOk) => {
 
    setTimeout(() => {
       toastHTML.remove()
-   }, 2000)
+   }, 5000)
 }
